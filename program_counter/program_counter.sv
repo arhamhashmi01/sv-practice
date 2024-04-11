@@ -23,21 +23,29 @@ module program_counter(
         end
         else begin
             if (next_select) begin
-                pc_address_out <= next_address;
+                pc_address_out   <= next_address;
                 previous_address <= pc_address_out;
             end
             else if (jalr) begin
-                pc_address_out <= next_address;
+                pc_address_out   <= next_address;
                 previous_address <= pc_address_out;
             end
-            else if (jalr) begin
+            else if (branch) begin
                 if (branch_result) begin
-                    pc_address_out <= next_address;
+                    pc_address_out   <= next_address;
+                    previous_address <= pc_address_out;
+                end
+                else begin
+                    pc_address_out   <= pc_address_out + 32'd4;
                     previous_address <= pc_address_out;
                 end
             end
+            else if (load | !dmem_valid) begin 
+                pc_address_out   <= pc_address_out;
+                previous_address <= pre_pc_address;
+            end
             else begin
-                pc_address_out <= pc_address_out + 32'd4;
+                pc_address_out   <= pc_address_out + 32'd4;
                 previous_address <= pc_address_out;
             end
         end
